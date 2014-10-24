@@ -19,7 +19,7 @@ var fetchTerm = function(input, onStart) {
 		.throttle(250);
 };
 
-var searchTerm: function(url) { return function(term) {
+var remote: function(url) { return function(term) {
 	return $.ajaxAsObservable({
 		url: url,
 		method: 'get',
@@ -29,7 +29,14 @@ var searchTerm: function(url) { return function(term) {
 	});
 } };
 
-module.exports = function(autocompleteUrl) { return function(input, onStart) {
-	return fetchTerm(input, onStart)
-		.flatMapLatest(searchTerm(autocompleteUrl));
-} };
+module.exports = function(autocompleteUrl, input, onStart) {
+		return fetchTerm(input, onStart)
+			.flatMapLatest(remote(autocompleteUrl));
+	// },
+	// pageDetail: function(pageDetailUrl) {
+	// 	var doRequest = remote(pageDetailUrl);
+	// 	return function(item) {
+	// 		doRequest(item);
+	// 	}
+	// }
+};
