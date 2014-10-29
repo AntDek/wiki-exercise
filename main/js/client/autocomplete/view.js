@@ -26,8 +26,4 @@ module.exports = function(input, resultsHtml, clean) {
 		},
 
 	}
-
-	// suggestionsSource(input, onStartSearch).subscribe(function(results) {
-	// 	resultsHtml.html(resultsList(resultsToLi(results)));
-	// });
 }

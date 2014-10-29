@@ -1,37 +1,26 @@
 var $ = require('jquery');
-var source = require('source');
-var view = require('reusltsView');
+var sources = require('./sources');
+var view = require('./reusltsView');
+var restApi = require('../restApi');
 
-module.exports = function(doc, apiUrl, onTermSelect) {
-	var autocompleteUrl = apiUrl + '/autocomplete';
-	var detailPage = apiUrl + '/detail';
+module.exports = function(doc, autocompleteRemoteApi, onTermSelect) {
 	var resultsHtml = doc.find('#suggestions-list');
 	var input = doc.find('#search');
 	var clean = doc.find('#clean');
-	view = view(input, resultsHtml, clean)
 
+	view = view(input, resultsHtml, clean);
+
+	var liStream = sources.itemByPosition(resultsHtml, 'li a');
 	var subs;
 
-
-	source(autocompleteUrl, input, view.onStartSearch).subscribe(function(results) {
-		view.appnedNewResults(results);
-		if (subs) subs.dispose();
-		subs = liStream(results).subscribe(onTermSelect);
-		// sources.
-		// resultsHtml
-		// 	.off('click', 'li a')
-		// 	.onAsObservable('click', 'li a')
-		// 	.map(function(e){
-		// 		e.preventDetail();
-		// 		return $(e.target).closest('li').index() ];
-		// 	})
-		// 	.filter(function(index) {
-		// 		return index > 0 && index < results.length;
-		// 	})
-		// 	.map(function(index) {
-		// 		return results[index];
-		// 	})
-		// 	.subscribe(onTermSelect);
-	});
+	sources.autocomplete(input, view.onStartSearch)
+		.faltMapLatest(function(term) {
+			return autocompleteRemoteApi({query: term});
+		})
+		.subscribe(function(results) {
+			view.appnedNewResults(results);
+			if (subs) subs.dispose();
+			subs = liStream(results).subscribe(onTermSelect);
+		});
 
 }
