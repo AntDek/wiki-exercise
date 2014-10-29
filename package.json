@@ -10,7 +10,9 @@
     "browserify": "^6.0.3",
     "express": "^4.9.6",
     "jquery": "^2.1.1",
+    "jsdom": "^1.0.3",
     "rx": "^2.3.13",
-    "rx-jquery": "^1.1.7"
+    "rx-jquery": "^1.1.7",
+    "superagent": "^0.20.0"
   }
 }
