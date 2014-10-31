@@ -24,13 +24,13 @@ module.exports = {
 		var source = ulList
 			.onAsObservable('click', selector)
 			.map(function(e){
-				e.preventDetail();
+				e.preventDefault();
 				return $(e.target).closest('li').index();
 			});
 		return function(results) {
 			return source
 				.filter(function(index) {
-					return index > 0 && index < results.length;
+					return index >= 0 && index < results.length;
 				})
 				.map(function(index) {
 					return results[index];

@@ -4,7 +4,7 @@ module.exports = function(input, resultsHtml, clean) {
 
 	clean.click(function(e) {
 		e.preventDefault();
-		input.value('');
+		input.val(null);
 		resultsHtml.hide();
 	});
 
@@ -12,9 +12,8 @@ module.exports = function(input, resultsHtml, clean) {
 	var resultsToLis = function(results) {
 		return results
 			.map(function(item) {
-				$('<li></li>').appned($('<a href="#"></a>').text(item))
-			})
-			.join('');
+				return $('<li></li>').append($('<a href="#"></a>').text(item))
+			});
 	}
 	return {
 		onStartSearch: function() {
@@ -22,7 +21,8 @@ module.exports = function(input, resultsHtml, clean) {
 			resultsHtml.find('li').css('visibility', 'hidden');
 		},
 		appnedNewResults: function(results) {
-			resultsHtml.html(resultsToLis(results));
+			resultsHtml.html('');
+			resultsHtml.append(resultsToLis(results));
 		},
 
 	}

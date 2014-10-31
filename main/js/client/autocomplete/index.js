@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var sources = require('./sources');
-var view = require('./reusltsView');
+var view = require('./view');
 var restApi = require('../restApi');
 
 module.exports = function(doc, autocompleteRemoteApi, onTermSelect) {
@@ -14,9 +14,7 @@ module.exports = function(doc, autocompleteRemoteApi, onTermSelect) {
 	var subs;
 
 	sources.autocomplete(input, view.onStartSearch)
-		.faltMapLatest(function(term) {
-			return autocompleteRemoteApi({query: term});
-		})
+		.flatMapLatest(autocompleteRemoteApi)
 		.subscribe(function(results) {
 			view.appnedNewResults(results);
 			if (subs) subs.dispose();
