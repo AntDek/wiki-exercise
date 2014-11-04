@@ -1,6 +1,13 @@
+// require jquery framework
 var $ = require('jquery');
+
+// require sources module
 var sources = require('./sources');
+
+// require view
 var view = require('./view');
+
+// require remote api provider
 var restApi = require('../restApi');
 
 module.exports = function(doc, autocompleteRemoteApi, onTermSelect) {
@@ -10,9 +17,11 @@ module.exports = function(doc, autocompleteRemoteApi, onTermSelect) {
 
 	view = view(input, resultsHtml, clean);
 
+	// observable sequence posts item that user selects
 	var liStream = sources.itemByPosition(resultsHtml, 'li a');
 	var subs;
 
+	// observable sequence maps users input with wiki available pages
 	sources.autocomplete(input, view.onStartSearch)
 		.flatMapLatest(autocompleteRemoteApi)
 		.subscribe(function(results) {

@@ -1,7 +1,7 @@
 // require express framework
 var express = require("express");
 
-// require server app
+// rest server routes
 var rest = require("./rest");
 
 // create express app

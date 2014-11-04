@@ -1,0 +1,1 @@
+browserify main/js/client/index.js -o main/public/main.js
