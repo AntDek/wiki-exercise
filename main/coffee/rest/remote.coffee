@@ -18,5 +18,5 @@ module.exports =
 			.get(wikiDetailUrl)
 			.query(page: idPage)
 			.end (res) ->
-				return done(res.error)  if res.error
+				return done(res.body.error)  if res.body.error
 				done null, res.body.parse.text["*"]
