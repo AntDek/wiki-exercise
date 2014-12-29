@@ -10,7 +10,7 @@
 # attach server routes
 # TODO You fill in here
 
-# catch every requets and redirect it to index.html
+# catch every requests and redirect it to index.html
 # TODO You fill in here to redirect all request to index.html
 
 # start server on port 3000

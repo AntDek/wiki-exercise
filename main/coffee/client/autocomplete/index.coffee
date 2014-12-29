@@ -19,13 +19,12 @@ module.exports = (doc, autocompleteRemoteApi, onTermSelect) ->
 
 	# observable sequence posts item that user selects
 	liStream = sources.itemByPosition resultsHtml, "li a"
-	subs
+	subs = null
 
 	# observable sequence maps users input with wiki available pages
 	sources.autocomplete(input, view.onStartSearch)
 		.flatMapLatest(autocompleteRemoteApi)
-		.subscribe((results) ->
+		.subscribe (results) ->
 			view.appnedNewResults results
 			subs.dispose() if subs
 			subs = liStream(results).subscribe onTermSelect
-		)

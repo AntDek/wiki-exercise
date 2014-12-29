@@ -390,9 +390,16 @@ process.chdir = function (dir) {
 };
 
 },{}],3:[function(require,module,exports){
+// require jquery framework
 var $ = require('jquery');
+
+// require sources module
 var sources = require('./sources');
+
+// require view
 var view = require('./view');
+
+// require remote api provider
 var restApi = require('../restApi');
 
 module.exports = function(doc, autocompleteRemoteApi, onTermSelect) {
@@ -402,9 +409,11 @@ module.exports = function(doc, autocompleteRemoteApi, onTermSelect) {
 
 	view = view(input, resultsHtml, clean);
 
+	// observable sequence posts item that user selects
 	var liStream = sources.itemByPosition(resultsHtml, 'li a');
-	var subs;
+	var subs = null;
 
+	// observable sequence maps users input with wiki available pages
 	sources.autocomplete(input, view.onStartSearch)
 		.flatMapLatest(autocompleteRemoteApi)
 		.subscribe(function(results) {
@@ -422,15 +431,16 @@ var inputIgnoreKeys = [13, 37, 38, 39, 40];
 
 module.exports = {
 	autocomplete: function(input, onStart) {
+		// create sequence on keyup event on input, that propagates input value each 250 ms
 		return input
 			.keyupAsObservable() 
-			.filter( function(event) {
+			.filter(function(event) {
 				return inputIgnoreKeys.indexOf(event.keyCode) == -1;
 			})
-			.map( function(event) {
+			.map(function(event) {
 				return $(event.target).val();
 			})
-			.filter( function(text) {
+			.filter(function(text) {
 				return text.length >= 2;
 			})
 			.distinctUntilChanged()
@@ -438,6 +448,7 @@ module.exports = {
 			.throttle(250);
 	},
 	itemByPosition: function(ulList, selector) {
+		// create observable sequence on click on li element
 		var source = ulList
 			.onAsObservable('click', selector)
 			.map(function(e){
@@ -445,6 +456,7 @@ module.exports = {
 				return $(e.target).closest('li').index();
 			});
 		return function(results) {
+			// check index and map to item of wiki search results
 			return source
 				.filter(function(index) {
 					return index >= 0 && index < results.length;
@@ -453,15 +465,16 @@ module.exports = {
 					return results[index];
 				});
 		}
-
 	}
 }
 },{"jquery":8,"rx-jquery":10}],5:[function(require,module,exports){
-$ = require('jquery');
+// require jquery framework
+var $ = require('jquery');
 
-module.exports = function(input, resultsHtml, clean) {
+module.exports = function(input, resultsHtml, cleanButton) {
 
-	clean.click(function(e) {
+	// register function on click event
+	cleanButton.click(function(e) {
 		e.preventDefault();
 		input.val(null);
 		resultsHtml.hide();
@@ -469,40 +482,59 @@ module.exports = function(input, resultsHtml, clean) {
 
 
 	var resultsToLis = function(results) {
+		// map results to html code
 		return results
 			.map(function(item) {
 				return $('<li></li>').append($('<a href="#"></a>').text(item))
 			});
 	}
+	// provide public methods
 	return {
 		onStartSearch: function() {
-			resultsHtml.show();
+			// hide previous results
 			resultsHtml.find('li').css('visibility', 'hidden');
+			// show results placeholder
+			resultsHtml.show();
 		},
 		appnedNewResults: function(results) {
+			// remove previous results
 			resultsHtml.html('');
+			// append new results
 			resultsHtml.append(resultsToLis(results));
-		},
-
+		}
 	}
 }
 },{"jquery":8}],6:[function(require,module,exports){
+// require jquery framework
 var $ = require("jquery");
+
+// require autocomplete module
 var autocomplete = require("./autocomplete");
+
+// require remote api provider
 var request = require("./restApi");
 
+// run client app when document will be ready
 $(document).ready(function(){
+	// create jquery object of document
 	var doc = $(document);
+	// find element to insert results from wiki search
 	var detail = doc.find("#results");
 
+	// when user selects item from autocomplete
+	// this function will be fired
 	var onPageSelect = function(page) {
+		// inform user that page is loading
+		detail.html("loading...");
+		// create observable sequence for remote call
 		request
 			.findPage(page)
 			.subscribe(function(html){
-				detail.html(html);
+				detail.html(html); //pass page html to document
 		});
 	}
 
+	// configurate autocomplete
 	autocomplete(doc, request.findPagesList, onPageSelect);
 });
 },{"./autocomplete":3,"./restApi":7,"jquery":8}],7:[function(require,module,exports){
@@ -529,7 +561,7 @@ module.exports = (function() {
 		findPagesList: function(term) {
 			return apiAutocomplete({term: term})
 				.map(function(data) {
-					return data.pop();
+					return data[1];
 				});
 		},
 		findPage: function(idPage) {

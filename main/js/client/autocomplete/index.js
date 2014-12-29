@@ -19,7 +19,7 @@ module.exports = function(doc, autocompleteRemoteApi, onTermSelect) {
 
 	// observable sequence posts item that user selects
 	var liStream = sources.itemByPosition(resultsHtml, 'li a');
-	var subs;
+	var subs = null;
 
 	// observable sequence maps users input with wiki available pages
 	sources.autocomplete(input, view.onStartSearch)
