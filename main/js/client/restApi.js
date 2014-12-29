@@ -21,7 +21,7 @@ module.exports = (function() {
 		findPagesList: function(term) {
 			return apiAutocomplete({term: term})
 				.map(function(data) {
-					return data.pop();
+					return data[1];
 				});
 		},
 		findPage: function(idPage) {
